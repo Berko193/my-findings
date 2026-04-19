@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#f0fdf4">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+<title>My Findings</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;1,500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  button, input, textarea, select { touch-action: manipulation; }
+
+  :root {
+    --green-50: #f0fdf4;
+    --green-100: #dcfce7;
+    --green-200: #bbf7d0;
+    --green-300: #86efac;
+    --green-400: #4ade80;
+    --green-500: #22c55e;
+    --green-600: #16a34a;
+    --green-700: #15803d;
+    --emerald-500: #10b981;
+    --emerald-600: #059669;
+    --gray-50: #fafafa;
+    --gray-100: #f5f5f5;
+    --gray-200: #e5e5e5;
+    --gray-300: #d4d4d4;
+    --gray-400: #a3a3a3;
+    --gray-500: #737373;
+    --gray-600: #525252;
+    --gray-700: #404040;
+    --gray-800: #262626;
+    --radius: 16px;
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: linear-gradient(160deg, var(--green-50) 0%, #f5fff8 40%, #f0fdf4 100%);
+    color: var(--gray-700);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    padding-top: env(safe-area-inset-top);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    top: -40%;
+    right: -25%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(74,222,128,0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -30%;
+    left: -20%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 24px 16px calc(90px + env(safe-area-inset-bottom));
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── header ── */
+  header {
+    text-align: center;
+    padding: 28px 0 20px;
+    animation: fadeDown 0.5s ease-out;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  header .icon {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--green-400), var(--green-600));
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.3);
+  }
+
+  header .icon svg {
+    width: 26px;
+    height: 26px;
+    fill: none;
+    stroke: white;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 1.8rem;
+    color: var(--gray-800);
+  }
+
+  header .subtitle {
+    font-size: 0.82rem;
+    color: var(--gray-400);
+    margin-top: 4px;
+  }
+
+  /* ── search & filter bar ── */
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.4s ease-out both;
+    animation-delay: 0.05s;
+  }
+
+  .search-box {
+    flex: 1;
+    height: 44px;
+    border: 1.5px solid var(--green-200);
+    border-radius: 12px;
+    padding: 0 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: var(--gray-800);
+    background: rgba(255,255,255,0.8);
+    outline: none;
+    transition: all 0.2s ease;
+  }
+
+  .search-box::placeholder { color: var(--gray-400); }
+
+  .search-box:focus {
+    border-color: var(--green-400);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15);
+  }
+
+  .filter-select {
+    height: 44px;
+    border: 1.5px solid var(--green-200);
+    border-radius: 12px;
+    padding: 0 12px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--green-700);
+    background: rgba(240, 253, 244, 0.8);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+  }
+
+  /* ── add button (FAB) ── */
+  .fab {
+    position: fixed;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--green-500), var(--green-600));
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 300;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(34, 197, 94, 0.35);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .fab:active { transform: scale(0.92); }
+  .fab svg { width: 24px; height: 24px; stroke: white; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+  /* ── modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .modal {
+    width: 100%;
+    max-width: 560px;
+    max-height: 90dvh;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px calc(24px + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .modal-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--gray-300);
+    border-radius: 2px;
+    margin: 0 auto 20px;
+  }
+
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-size: 1.3rem;
+    color: var(--gray-800);
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .modal label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--green-600);
+    margin-bottom: 6px;
+  }
+
+  .modal input[type="text"],
+  .modal textarea,
+  .modal select {
+    width: 100%;
+    border: 1.5px solid var(--green-200);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.92rem;
+    color: var(--gray-800);
+    background: var(--green-50);
+    outline: none;
+    transition: all 0.2s ease;
+    margin-bottom: 16px;
+    -webkit-appearance: none;
+  }
+
+  .modal textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .modal input:focus,
+  .modal textarea:focus,
+  .modal select:focus {
+    border-color: var(--green-400);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15);
+  }
+
+  .modal select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2316a34a' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+    cursor: pointer;
+  }
+
+  /* image upload */
+  .upload-area {
+    border: 2px dashed var(--green-300);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(240, 253, 244, 0.5);
+  }
+
+  .upload-area:active {
+    border-color: var(--green-500);
+    background: var(--green-100);
+  }
+
+  .upload-area svg {
+    width: 32px;
+    height: 32px;
+    stroke: var(--green-400);
+    fill: none;
+    stroke-width: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .upload-area p {
+    font-size: 0.82rem;
+    color: var(--gray-400);
+    font-weight: 500;
+  }
+
+  .upload-preview {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .upload-preview .thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 1.5px solid var(--green-200);
+    position: relative;
+  }
+
+  .thumb-wrap {
+    position: relative;
+    display: inline-block;
+  }
+
+  .thumb-remove {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--gray-800);
+    color: white;
+    border: none;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .btn-save {
+    flex: 1;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--green-500), var(--green-600));
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+    transition: all 0.2s ease;
+  }
+
+  .btn-save:active { transform: scale(0.97); opacity: 0.85; }
+
+  .btn-cancel {
+    height: 50px;
+    padding: 0 20px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 12px;
+    background: white;
+    color: var(--gray-500);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-cancel:active { transform: scale(0.97); opacity: 0.8; }
+
+  /* ── cards grid ── */
+  .findings-grid {
+    display: grid;
+    gap: 14px;
+  }
+
+  .finding-card {
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius);
+    box-shadow: 0 4px 20px rgba(34, 197, 94, 0.05), 0 1px 3px rgba(0,0,0,0.04);
+    border: 1px solid rgba(187, 247, 208, 0.4);
+    padding: 18px;
+    animation: fadeUp 0.35s ease-out both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .finding-card .card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .category-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: var(--green-100);
+    color: var(--green-700);
+  }
+
+  .card-date {
+    font-size: 0.72rem;
+    color: var(--gray-400);
+  }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--gray-800);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .card-text {
+    font-size: 0.85rem;
+    color: var(--gray-500);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .card-images {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .card-images::-webkit-scrollbar { display: none; }
+
+  .card-images img {
+    height: 120px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: flex-end;
+  }
+
+  .card-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-400);
+    opacity: 0.5;
+    transition: all 0.15s ease;
+  }
+
+  .card-btn:active { opacity: 1; }
+  .card-btn.del:active { color: #e11d48; background: #fff1f2; }
+
+  /* ── image viewer ── */
+  .viewer {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .viewer.open { display: flex; }
+
+  .viewer img {
+    max-width: 100%;
+    max-height: 90dvh;
+    border-radius: 8px;
+    object-fit: contain;
+  }
+
+  .viewer-close {
+    position: absolute;
+    top: calc(16px + env(safe-area-inset-top));
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: white;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── empty state ── */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    animation: fadeUp 0.5s ease-out;
+  }
+
+  .empty svg {
+    width: 56px;
+    height: 56px;
+    stroke: var(--green-300);
+    fill: none;
+    stroke-width: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .empty p {
+    color: var(--gray-400);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .empty p strong {
+    color: var(--green-500);
+  }
+
+  /* ── stats bar ── */
+  .stats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .stats::-webkit-scrollbar { display: none; }
+
+  .stat-chip {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--green-200);
+    color: var(--green-700);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .stat-chip.active {
+    background: var(--green-500);
+    color: white;
+    border-color: var(--green-500);
+  }
+
+  .stat-chip:active { transform: scale(0.95); }
+
+  /* ── custom category input ── */
+  .custom-cat {
+    display: none;
+    margin-top: -10px;
+    margin-bottom: 16px;
+  }
+
+  .custom-cat.show { display: block; }
+
+  /* ── responsive ── */
+  @media (max-width: 480px) {
+    .app { padding: 16px 14px calc(90px + env(safe-area-inset-bottom)); }
+    .modal { padding: 20px 16px calc(20px + env(safe-area-inset-bottom)); }
+    .finding-card { padding: 16px; }
+    .card-images img { height: 100px; }
+  }
+
+  @media (display-mode: standalone) {
+    header { padding-top: 8px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    </div>
+    <h1>My Findings</h1>
+    <div class="subtitle" id="totalCount"></div>
+  </header>
+
+  <div class="toolbar">
+    <input class="search-box" type="text" id="searchInput" placeholder="Search findings..." autocomplete="off">
+    <select class="filter-select" id="filterSelect">
+      <option value="all">All</option>
+    </select>
+  </div>
+
+  <div class="stats" id="statsBar"></div>
+
+  <div class="findings-grid" id="findingsGrid"></div>
+
+  <div class="empty" id="emptyState" style="display:none;">
+    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+    <p>No findings yet.<br>Tap <strong>+</strong> to save your first one.</p>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" type="button">
+  <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+</button>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modal">
+    <div class="modal-handle"></div>
+    <h2 id="modalTitle">New Finding</h2>
+
+    <label>Title</label>
+    <input type="text" id="fTitle" placeholder="What did you find?">
+
+    <label>Category</label>
+    <select id="fCategory">
+      <option value="Food">Food</option>
+      <option value="Renovation">Renovation</option>
+      <option value="Cleaning">Cleaning</option>
+      <option value="Education">Education</option>
+      <option value="Health">Health</option>
+      <option value="Tech">Tech</option>
+      <option value="Travel">Travel</option>
+      <option value="Finance">Finance</option>
+      <option value="__custom">+ New category...</option>
+    </select>
+    <div class="custom-cat" id="customCatWrap">
+      <input type="text" id="fCustomCat" placeholder="Enter new category name">
+    </div>
+
+    <label>Notes</label>
+    <textarea id="fText" placeholder="Details, tips, links..."></textarea>
+
+    <label>Images</label>
+    <div class="upload-area" id="uploadArea">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      <p>Tap to add photos</p>
+      <input type="file" id="fileInput" accept="image/*" multiple style="display:none" capture="environment">
+    </div>
+    <div class="upload-preview" id="previewArea"></div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cancelBtn" type="button">Cancel</button>
+      <button class="btn-save" id="saveItemBtn" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image Viewer -->
+<div class="viewer" id="viewer">
+  <button class="viewer-close" id="viewerClose" type="button">&times;</button>
+  <img id="viewerImg" src="" alt="">
+</div>
+
+<div class="toast" id="toast" style="position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(80px);background:var(--gray-800);color:white;padding:12px 24px;border-radius:12px;font-size:0.85rem;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.12);z-index:300;opacity:0;transition:all 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:none;"></div>
+
+<script>
+  const STORAGE_KEY = 'my_findings';
+  const grid = document.getElementById('findingsGrid');
+  const emptyState = document.getElementById('emptyState');
+  const searchInput = document.getElementById('searchInput');
+  const filterSelect = document.getElementById('filterSelect');
+  const statsBar = document.getElementById('statsBar');
+  const totalCount = document.getElementById('totalCount');
+  const toast = document.getElementById('toast');
+  const modalOverlay = document.getElementById('modalOverlay');
+  const modal = document.getElementById('modal');
+  const fTitle = document.getElementById('fTitle');
+  const fCategory = document.getElementById('fCategory');
+  const fCustomCat = document.getElementById('fCustomCat');
+  const customCatWrap = document.getElementById('customCatWrap');
+  const fText = document.getElementById('fText');
+  const uploadArea = document.getElementById('uploadArea');
+  const fileInput = document.getElementById('fileInput');
+  const previewArea = document.getElementById('previewArea');
+  const viewer = document.getElementById('viewer');
+  const viewerImg = document.getElementById('viewerImg');
+
+  let editingId = null;
+  let pendingImages = [];
+  let activeFilter = 'all';
+
+  function getFindings() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+    catch { return []; }
+  }
+
+  function saveFindings(data) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
+
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(80px)';
+    }, 2000);
+  }
+
+  function getDateStr() {
+    const d = new Date();
+    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  }
+
+  function formatDate(s) {
+    const d = new Date(s + 'T12:00:00');
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function getCategories() {
+    const findings = getFindings();
+    const cats = new Set();
+    findings.forEach(f => cats.add(f.category));
+    return [...cats].sort();
+  }
+
+  // Render
+  function render() {
+    const findings = getFindings();
+    const search = searchInput.value.toLowerCase().trim();
+    const filter = activeFilter;
+
+    let filtered = findings;
+    if (filter !== 'all') filtered = filtered.filter(f => f.category === filter);
+    if (search) filtered = filtered.filter(f =>
+      f.title.toLowerCase().includes(search) ||
+      f.text.toLowerCase().includes(search) ||
+      f.category.toLowerCase().includes(search)
+    );
+
+    totalCount.textContent = findings.length + (findings.length === 1 ? ' finding' : ' findings');
+
+    // Stats chips
+    const catCounts = {};
+    findings.forEach(f => { catCounts[f.category] = (catCounts[f.category] || 0) + 1; });
+    const cats = Object.entries(catCounts).sort((a,b) => b[1] - a[1]);
+
+    statsBar.innerHTML = `<div class="stat-chip ${activeFilter === 'all' ? 'active' : ''}" data-cat="all">All ${findings.length}</div>` +
+      cats.map(([c, n]) => `<div class="stat-chip ${activeFilter === c ? 'active' : ''}" data-cat="${c}">${c} ${n}</div>`).join('');
+
+    statsBar.querySelectorAll('.stat-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        activeFilter = chip.dataset.cat;
+        render();
+      });
+      chip.addEventListener('touchend', (e) => { e.preventDefault(); chip.click(); });
+    });
+
+    // Update filter dropdown
+    const currentFilter = filterSelect.value;
+    filterSelect.innerHTML = '<option value="all">All</option>' +
+      getCategories().map(c => `<option value="${c}">${c}</option>`).join('');
+    filterSelect.value = currentFilter;
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '';
+      emptyState.style.display = 'block';
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    grid.innerHTML = filtered.map((f, idx) => {
+      const realIdx = findings.indexOf(f);
+      const images = (f.images || []).map((src, ii) =>
+        `<img src="${src}" alt="" onclick="openViewer('${src.replace(/'/g, "\\'")}')">`
+      ).join('');
+
+      return `<div class="finding-card" style="animation-delay:${idx * 0.04}s">
+        <div class="card-top">
+          <span class="category-badge">${f.category}</span>
+          <span class="card-date">${formatDate(f.date)}</span>
+        </div>
+        <div class="card-title">${escHtml(f.title)}</div>
+        ${f.text ? `<div class="card-text">${escHtml(f.text)}</div>` : ''}
+        ${images ? `<div class="card-images">${images}</div>` : ''}
+        <div class="card-actions">
+          <button class="card-btn" type="button" onclick="editFinding(${realIdx})" title="Edit">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="card-btn del" type="button" onclick="deleteFinding(${realIdx})" title="Delete">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function escHtml(s) {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  // Modal
+  function openModal(finding) {
+    editingId = finding ? finding._idx : null;
+    document.getElementById('modalTitle').textContent = finding ? 'Edit Finding' : 'New Finding';
+    fTitle.value = finding ? finding.title : '';
+    fText.value = finding ? finding.text : '';
+    pendingImages = finding ? [...(finding.images || [])] : [];
+    customCatWrap.classList.remove('show');
+
+    // Ensure category exists in select
+    if (finding && finding.category) {
+      let found = false;
+      for (const opt of fCategory.options) {
+        if (opt.value === finding.category) { found = true; break; }
+      }
+      if (!found) {
+        const opt = document.createElement('option');
+        opt.value = finding.category;
+        opt.textContent = finding.category;
+        fCategory.insertBefore(opt, fCategory.querySelector('[value="__custom"]'));
+      }
+      fCategory.value = finding.category;
+    } else {
+      fCategory.selectedIndex = 0;
+    }
+
+    renderPreviews();
+    modalOverlay.classList.add('open');
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('open');
+    editingId = null;
+    pendingImages = [];
+    previewArea.innerHTML = '';
+    fTitle.value = '';
+    fText.value = '';
+  }
+
+  function renderPreviews() {
+    previewArea.innerHTML = pendingImages.map((src, i) =>
+      `<div class="thumb-wrap">
+        <img class="thumb" src="${src}" alt="">
+        <button class="thumb-remove" type="button" onclick="removeImage(${i})">&times;</button>
+      </div>`
+    ).join('');
+  }
+
+  window.removeImage = function(i) {
+    pendingImages.splice(i, 1);
+    renderPreviews();
+  };
+
+  // Category custom
+  fCategory.addEventListener('change', () => {
+    if (fCategory.value === '__custom') {
+      customCatWrap.classList.add('show');
+      fCustomCat.focus();
+    } else {
+      customCatWrap.classList.remove('show');
+    }
+  });
+
+  // File upload
+  uploadArea.addEventListener('click', () => fileInput.click());
+  uploadArea.addEventListener('touchend', (e) => { e.preventDefault(); fileInput.click(); });
+
+  fileInput.addEventListener('change', () => {
+    const files = fileInput.files;
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Compress image
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 800;
+          let w = img.width, h = img.height;
+          if (w > maxW) { h = h * maxW / w; w = maxW; }
+          canvas.width = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          pendingImages.push(canvas.toDataURL('image/jpeg', 0.7));
+          renderPreviews();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(files[i]);
+    }
+    fileInput.value = '';
+  });
+
+  // Save
+  function handleSaveItem() {
+    const title = fTitle.value.trim();
+    if (!title) { showToast('Add a title'); return; }
+
+    let category = fCategory.value;
+    if (category === '__custom') {
+      category = fCustomCat.value.trim();
+      if (!category) { showToast('Enter category name'); return; }
+    }
+
+    const findings = getFindings();
+    const item = {
+      id: editingId !== null ? findings[editingId].id : Date.now(),
+      title,
+      category,
+      text: fText.value.trim(),
+      images: pendingImages,
+      date: editingId !== null ? findings[editingId].date : getDateStr()
+    };
+
+    if (editingId !== null) {
+      findings[editingId] = item;
+    } else {
+      findings.unshift(item);
+    }
+
+    saveFindings(findings);
+    closeModal();
+    render();
+    showToast(editingId !== null ? 'Finding updated' : 'Finding saved');
+  }
+
+  document.getElementById('saveItemBtn').addEventListener('click', handleSaveItem);
+  document.getElementById('saveItemBtn').addEventListener('touchend', function(e) { e.preventDefault(); handleSaveItem(); });
+
+  // FAB
+  function handleFab() { openModal(null); }
+  document.getElementById('fabBtn').addEventListener('click', handleFab);
+  document.getElementById('fabBtn').addEventListener('touchend', function(e) { e.preventDefault(); handleFab(); });
+
+  // Cancel
+  function handleCancel() { closeModal(); }
+  document.getElementById('cancelBtn').addEventListener('click', handleCancel);
+  document.getElementById('cancelBtn').addEventListener('touchend', function(e) { e.preventDefault(); handleCancel(); });
+
+  // Close modal on overlay tap
+  modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
+  // Edit
+  window.editFinding = function(idx) {
+    const findings = getFindings();
+    const f = findings[idx];
+    f._idx = idx;
+    openModal(f);
+  };
+
+  // Delete
+  window.deleteFinding = function(idx) {
+    if (confirm('Delete this finding?')) {
+      const findings = getFindings();
+      findings.splice(idx, 1);
+      saveFindings(findings);
+      render();
+      showToast('Finding deleted');
+    }
+  };
+
+  // Viewer
+  window.openViewer = function(src) {
+    viewerImg.src = src;
+    viewer.classList.add('open');
+  };
+
+  function closeViewer() { viewer.classList.remove('open'); viewerImg.src = ''; }
+  document.getElementById('viewerClose').addEventListener('click', closeViewer);
+  document.getElementById('viewerClose').addEventListener('touchend', function(e) { e.preventDefault(); closeViewer(); });
+  viewer.addEventListener('click', (e) => { if (e.target === viewer) closeViewer(); });
+
+  // Search
+  searchInput.addEventListener('input', render);
+
+  // Filter select
+  filterSelect.addEventListener('change', () => {
+    activeFilter = filterSelect.value;
+    render();
+  });
+
+  render();
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js');
+  }
+</script>
+
+</body>
+</html>
